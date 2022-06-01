@@ -1,0 +1,41 @@
+- hosts: all
+  gather_facts: false
+  collections:
+    - f5networks.f5_modules
+  tasks:
+    - name: Retreive BIG-IP admin password from Vault
+      community.hashi_vault.vault_kv2_get:
+        auth_method: token
+        token_validate: true
+        engine_mount_point: kv
+        url: http://vault:8200
+        path: bigip-admin-creds
+      register: bigip_creds
+      delegate_to: localhost
+
+    - name: Retrieve CAT key from Vault
+      community.hashi_vault.vault_kv2_get:
+        auth_method: token
+        token_validate: true
+        engine_mount_point: kv
+        url: http://vault:8200
+        path: bigiq-cat-keys
+      register: license_keys
+      delegate_to: localhost
+
+    - name: Revoke BIG-IP License
+      bigiq_utility_license_assignment:
+        device: "{{ inventory_hostname }}"
+        device_username: admin
+        device_password: "{{ bigip_creds.secret[inventory_hostname] }}"
+        managed: no
+        key: "{{ license_keys.secret[hostvars[inventory_hostname]['bigiq_host']] }}"
+        offering: "{{ hostvars[inventory_hostname]['offering'] }}"
+        unit_of_measure: yearly
+        provider:
+          server: "{{ hostvars[inventory_hostname]['bigiq_host'] }}"
+          user: admin
+          password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'bigiq-admin-creds', auth_method='token', token_validate='yes', engine_mount_point='kv', url='http://vault:8200')['secret'][hostvars[inventory_hostname]['bigiq_host']] }}"
+          validate_certs: no
+        state: absent
+      delegate_to: localhost

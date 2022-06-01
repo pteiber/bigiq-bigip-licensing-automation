@@ -1,0 +1,28 @@
+all:
+  children:
+    dev:
+      hosts:
+        "10.1.1.6":
+      vars:
+        offering: F5-BIG-MSP-AWF-1G-LIC-DEV
+        bigiq_host: 10.1.1.4
+        bigiq_password: f5bigiqadmin
+        password: "!f5admin"
+    prod:
+      children:
+        awaf:
+          hosts:
+            "10.1.1.8":
+          vars:
+            offering: F5-BIG-MSP-AWF-1G-LIC-DEV
+            bigiq_host: 10.1.1.4
+            bigiq_password: f5bigiqadmin
+            password: "!f5admin-new"
+        ltm:
+          hosts:
+            "10.1.1.9":
+          vars:
+            offering: F5-BIG-MSP-LTM-08-LIC-DEV
+            bigiq_host: 10.1.1.4
+            bigiq_password: f5bigiqadmin
+            password: "!f5admin-new"

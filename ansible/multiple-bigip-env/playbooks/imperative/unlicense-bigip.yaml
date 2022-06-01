@@ -1,0 +1,21 @@
+- hosts: all
+  gather_facts: false
+  collections:
+    - f5networks.f5_modules
+  tasks:
+    - name: Revoke BIG-IP License
+      bigiq_utility_license_assignment:
+        device: "{{ inventory_hostname }}"
+        device_username: admin
+        device_password: "{{ hostvars[inventory_hostname]['password'] }}"
+        managed: no
+        key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX
+        offering: "{{ hostvars[inventory_hostname]['offering'] }}"
+        unit_of_measure: yearly
+        provider:
+          server: "{{ hostvars[inventory_hostname]['bigiq_host'] }}"
+          user: admin
+          password: "{{ hostvars[inventory_hostname]['bigiq_password'] }}"
+          validate_certs: no
+        state: absent
+      delegate_to: localhost

@@ -1,0 +1,20 @@
+- hosts: all
+  gather_facts: false
+  collections:
+    - f5networks.f5_modules
+  tasks:
+    - name: License BIG-IP
+      bigiq_utility_license_assignment:
+        device: 10.1.1.6
+        device_username: admin
+        device_password: "!f5admin"
+        managed: no
+        key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX
+        offering: F5-BIG-MSP-AWF-1G-LIC-DEV
+        unit_of_measure: yearly
+        provider:
+          server: 10.1.1.4
+          user: admin
+          password: f5bigiqadmin
+          validate_certs: no
+      delegate_to: localhost
